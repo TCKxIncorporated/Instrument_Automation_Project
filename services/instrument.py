@@ -25,3 +25,18 @@ def disconnect_device():
     if instrument:
         instrument.close()
         instrument = None
+
+def set_channel_settings(channel, voltage, current):
+    """
+    Set the voltage and current for a specific channel on the instrument.
+    Returns (success: bool, message: str)
+    """
+    try:
+        # Example logic: Replace with actual instrument control code
+        # instrument.write(f"INST:NSEL {channel}")
+        # instrument.write(f"VOLT {voltage}")
+        # instrument.write(f"CURR {current}")
+        print(f"Setting channel {channel}: {voltage}V, {current}A")
+        return True, f"Channel {channel} set to {voltage}V, {current}A"
+    except Exception as e:
+        return

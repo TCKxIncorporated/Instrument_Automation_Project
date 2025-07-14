@@ -17,7 +17,7 @@ def set_channel(stub, channel, voltage, current):
     print(f"SetChannel success: {response.success}, message: {response.message}")
 
 def main():
-    with grpc.insecure_channel('localhost:50051') as channel:
+    with grpc.insecure_channel('172.20.10.5:50051') as channel:
         stub = instrument_pb2_grpc.InstrumentServiceStub(channel)
         get_status(stub)
         set_channel(stub, channel=1, voltage=5.0, current=1.0)

@@ -74,3 +74,26 @@ def get_status():
     """Return the current device status"""
     device_status["timestamp"] = current_timestamp()
     return device_status
+
+@router.post("/output")
+def control_output(control: OutputControl):
+    from services.instrument import instrument  # shared instrument instance
+
+    if not instrument:
+        raise HTTPException(status_code=400, detail="No device connected")
+
+    try:
+        for channel in [1, 2, 3]:
+            instrument.write(f"INST:NSEL {channel}")
+            instrument.write(f"OUTP {'ON' if control.state else 'OFF'}")
+
+        device_status["output_state"] = control.state
+        device_status["timestamp"] = current_timestamp()
+
+        return {
+            "success": True,
+            "message": f"All channels output {'ON' if control.state else 'OFF'}"
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to control output: {str(e)}")

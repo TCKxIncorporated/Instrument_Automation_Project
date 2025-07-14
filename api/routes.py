@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from models.schema import PowerSupplySettings, OutputControl
 from services import instrument, monitor
+from utils.helpers import current_timestamp
 
 router = APIRouter()
 
@@ -67,3 +68,9 @@ def plot_data():
 def clear_plot():
     monitor.clear_data()
     return {"message": "Data cleared"}
+
+@router.get("/status")
+def get_status():
+    """Return the current device status"""
+    device_status["timestamp"] = current_timestamp()
+    return device_status

@@ -1,6 +1,6 @@
 import grpc
 from concurrent import futures
-from services.instrument import get_status, set_channel  # You should implement these functions in your services
+from api.routes import get_status, set_settings  # You should implement these functions in your services
 import instrument_pb2
 import instrument_pb2_grpc
 
@@ -13,7 +13,7 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
     def SetChannel(self, request, context):
         # Call your actual channel setting logic
         try:
-            result = set_channel(
+            result = set_settings(
                 channel=request.channel,
                 voltage=request.voltage,
                 current=request.current

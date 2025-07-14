@@ -24,11 +24,21 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10instrument.proto')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10instrument.proto\x12\ninstrument\"\x0f\n\rStatusRequest\" \n\x0eStatusResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"C\n\x0e\x43hannelRequest\x12\x0f\n\x07\x63hannel\x18\x01 \x01(\x05\x12\x0f\n\x07voltage\x18\x02 \x01(\x01\x12\x0f\n\x07\x63urrent\x18\x03 \x01(\x01\"3\n\x0f\x43hannelResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\x9e\x01\n\x11InstrumentService\x12\x42\n\tGetStatus\x12\x19.instrument.StatusRequest\x1a\x1a.instrument.StatusResponse\x12\x45\n\nSetChannel\x12\x1a.instrument.ChannelRequest\x1a\x1b.instrument.ChannelResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'instrument_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
+  _globals['_STATUSREQUEST']._serialized_start=32
+  _globals['_STATUSREQUEST']._serialized_end=47
+  _globals['_STATUSRESPONSE']._serialized_start=49
+  _globals['_STATUSRESPONSE']._serialized_end=81
+  _globals['_CHANNELREQUEST']._serialized_start=83
+  _globals['_CHANNELREQUEST']._serialized_end=150
+  _globals['_CHANNELRESPONSE']._serialized_start=152
+  _globals['_CHANNELRESPONSE']._serialized_end=203
+  _globals['_INSTRUMENTSERVICE']._serialized_start=206
+  _globals['_INSTRUMENTSERVICE']._serialized_end=364
 # @@protoc_insertion_point(module_scope)

@@ -3,6 +3,7 @@
 import grpc
 import warnings
 
+import instrument_pb2 as instrument__pb2
 
 GRPC_GENERATED_VERSION = '1.73.1'
 GRPC_VERSION = grpc.__version__
@@ -22,3 +23,119 @@ if _version_not_supported:
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
     )
+
+
+class InstrumentServiceStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.GetStatus = channel.unary_unary(
+                '/instrument.InstrumentService/GetStatus',
+                request_serializer=instrument__pb2.StatusRequest.SerializeToString,
+                response_deserializer=instrument__pb2.StatusResponse.FromString,
+                _registered_method=True)
+        self.SetChannel = channel.unary_unary(
+                '/instrument.InstrumentService/SetChannel',
+                request_serializer=instrument__pb2.ChannelRequest.SerializeToString,
+                response_deserializer=instrument__pb2.ChannelResponse.FromString,
+                _registered_method=True)
+
+
+class InstrumentServiceServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def GetStatus(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SetChannel(self, request, context):
+        """Add more RPCs as needed
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_InstrumentServiceServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'GetStatus': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetStatus,
+                    request_deserializer=instrument__pb2.StatusRequest.FromString,
+                    response_serializer=instrument__pb2.StatusResponse.SerializeToString,
+            ),
+            'SetChannel': grpc.unary_unary_rpc_method_handler(
+                    servicer.SetChannel,
+                    request_deserializer=instrument__pb2.ChannelRequest.FromString,
+                    response_serializer=instrument__pb2.ChannelResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'instrument.InstrumentService', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('instrument.InstrumentService', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class InstrumentService(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def GetStatus(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/instrument.InstrumentService/GetStatus',
+            instrument__pb2.StatusRequest.SerializeToString,
+            instrument__pb2.StatusResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SetChannel(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/instrument.InstrumentService/SetChannel',
+            instrument__pb2.ChannelRequest.SerializeToString,
+            instrument__pb2.ChannelResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)

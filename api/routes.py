@@ -28,10 +28,36 @@ def connect(request: dict):
     monitor.start_monitoring(instrument.instrument, 1, True)
     return {"device_info": idn}
 
+
 @router.post("/settings")
 def set_settings(settings: PowerSupplySettings):
-    # Instrument control commands go here
-    return {"success": True}
+    from services.instrument import instrument  # import the global instrument instance
+
+    if not instrument:
+        raise HTTPException(status_code=400, detail="No device connected")
+
+    if settings.voltage_set > settings.voltage_limit:
+        raise HTTPException(status_code=400, detail="Set voltage cannot exceed voltage limit")
+
+    try:
+        # Select the channel
+        instrument.write(f"INST:NSEL {settings.channel}")
+
+        # Apply settings
+        instrument.write(f"SOUR:VOLT:LIM {settings.voltage_limit}")
+        instrument.write("SOUR:VOLT:LIM:STAT ON")
+        instrument.write(f"SOUR:VOLT {settings.voltage_set}")
+        instrument.write(f"SOUR:CURR {settings.current}")
+
+        # Optionally update global status object
+        device_status["last_settings"] = settings.dict()
+        device_status["current_channel"] = settings.channel
+
+        return {"success": True, "message": f"Settings applied to channel {settings.channel}"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to apply settings: {str(e)}")
+
 
 @router.get("/plot-data")
 def plot_data():

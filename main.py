@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from api.routes import router as api_router
-from services.monitor import stop_monitoring
-from utils.helpers import initialize_visa
+from services.monitor import start_monitoring, stop_monitoring
+from services.instrument import initialize_visa
 
 app = FastAPI(
     title="Keithley 2230G Remote Controller",

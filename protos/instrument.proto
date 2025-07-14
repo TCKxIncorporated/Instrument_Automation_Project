@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package instrument;
+
+service InstrumentService {
+  rpc GetStatus (StatusRequest) returns (StatusResponse);
+  rpc SetChannel (ChannelRequest) returns (ChannelResponse);
+  // Add more RPCs as needed
+}
+
+message StatusRequest {}
+message StatusResponse {
+  string status = 1;
+}
+
+message ChannelRequest {
+  int32 channel = 1;
+  double voltage = 2;
+  double current = 3;
+}
+
+message ChannelResponse {
+  bool success = 1;
+  string message = 2;
+}

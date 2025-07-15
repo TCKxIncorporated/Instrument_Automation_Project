@@ -2,9 +2,8 @@ import grpc
 import instrument_pb2
 import instrument_pb2_grpc
 from instrument_pb2 import DeviceRequest, Empty
-import grpc
-from instrument_pb2 import Empty, DeviceRequest
 from instrument_pb2_grpc import InstrumentServiceStub
+import asyncio
 
 GRPC_ADDRESS = '172.20.10.5:50051'
 
@@ -57,10 +56,12 @@ def disconnect_remote_device():
         return response.success, response.message
 
 async def main():
-    initialize_visa()
-    with grpc.insecure_channel(GRPC_ADDRESS) as channel:
-        stub = instrument_pb2_grpc.InstrumentServiceStub(channel)
-        
+    ok = initialize_visa()
+    if not ok:
+        return
+    # now call ListDevices
+    devices = list_devices()
+    print("Found:", devices)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())   # correct way

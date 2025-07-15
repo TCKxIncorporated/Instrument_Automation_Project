@@ -1,4 +1,7 @@
 import pyvisa
+import grpc
+from grpc_client import set_channel
+from instrument_pb2_grpc import InstrumentServiceStub
 
 rm = None
 instrument = None
@@ -36,7 +39,11 @@ def set_channel_settings(channel, voltage, current):
         # instrument.write(f"INST:NSEL {channel}")
         # instrument.write(f"VOLT {voltage}")
         # instrument.write(f"CURR {current}")
+        
         print(f"Setting channel {channel}: {voltage}V, {current}A")
+        stub = InstrumentServiceStub(grpc.insecure_channel('172.20.10.5:50051'))
+        set_channel(stub, channel, voltage, current)
+
         return True, f"Channel {channel} set to {voltage}V, {current}A"
     except Exception as e:
         return

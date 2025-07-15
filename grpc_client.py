@@ -28,11 +28,12 @@ def get_status(stub):
     response = stub.GetStatus(request)
     print(f"Status: {response.status}")
 
-def set_channel_settings(channel: int, voltage: float, current: float):
+def set_channel_settings(channel: int, limit: float, voltage: float, current: float):
     with grpc.insecure_channel(GRPC_ADDRESS) as channel_conn:
         stub = instrument_pb2_grpc.InstrumentServiceStub(channel_conn)
         request = instrument_pb2.ChannelRequest(
             channel=channel,
+            voltage_limit=limit,
             voltage=voltage,
             current=current
         )

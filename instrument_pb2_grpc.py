@@ -35,14 +35,29 @@ class InstrumentServiceStub(object):
             channel: A grpc.Channel.
         """
         self.GetStatus = channel.unary_unary(
-                '/instrument.InstrumentService/GetStatus',
+                '/InstrumentService/GetStatus',
                 request_serializer=instrument__pb2.StatusRequest.SerializeToString,
                 response_deserializer=instrument__pb2.StatusResponse.FromString,
                 _registered_method=True)
         self.SetChannel = channel.unary_unary(
-                '/instrument.InstrumentService/SetChannel',
+                '/InstrumentService/SetChannel',
                 request_serializer=instrument__pb2.ChannelRequest.SerializeToString,
                 response_deserializer=instrument__pb2.ChannelResponse.FromString,
+                _registered_method=True)
+        self.ListDevices = channel.unary_unary(
+                '/InstrumentService/ListDevices',
+                request_serializer=instrument__pb2.Empty.SerializeToString,
+                response_deserializer=instrument__pb2.DeviceListResponse.FromString,
+                _registered_method=True)
+        self.ConnectDevice = channel.unary_unary(
+                '/InstrumentService/ConnectDevice',
+                request_serializer=instrument__pb2.DeviceRequest.SerializeToString,
+                response_deserializer=instrument__pb2.ConnectionResponse.FromString,
+                _registered_method=True)
+        self.DisconnectDevice = channel.unary_unary(
+                '/InstrumentService/DisconnectDevice',
+                request_serializer=instrument__pb2.Empty.SerializeToString,
+                response_deserializer=instrument__pb2.ConnectionResponse.FromString,
                 _registered_method=True)
 
 
@@ -56,8 +71,25 @@ class InstrumentServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def SetChannel(self, request, context):
-        """Add more RPCs as needed
-        """
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListDevices(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ConnectDevice(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DisconnectDevice(self, request, context):
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -75,11 +107,26 @@ def add_InstrumentServiceServicer_to_server(servicer, server):
                     request_deserializer=instrument__pb2.ChannelRequest.FromString,
                     response_serializer=instrument__pb2.ChannelResponse.SerializeToString,
             ),
+            'ListDevices': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDevices,
+                    request_deserializer=instrument__pb2.Empty.FromString,
+                    response_serializer=instrument__pb2.DeviceListResponse.SerializeToString,
+            ),
+            'ConnectDevice': grpc.unary_unary_rpc_method_handler(
+                    servicer.ConnectDevice,
+                    request_deserializer=instrument__pb2.DeviceRequest.FromString,
+                    response_serializer=instrument__pb2.ConnectionResponse.SerializeToString,
+            ),
+            'DisconnectDevice': grpc.unary_unary_rpc_method_handler(
+                    servicer.DisconnectDevice,
+                    request_deserializer=instrument__pb2.Empty.FromString,
+                    response_serializer=instrument__pb2.ConnectionResponse.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'instrument.InstrumentService', rpc_method_handlers)
+            'InstrumentService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('instrument.InstrumentService', rpc_method_handlers)
+    server.add_registered_method_handlers('InstrumentService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -100,7 +147,7 @@ class InstrumentService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/instrument.InstrumentService/GetStatus',
+            '/InstrumentService/GetStatus',
             instrument__pb2.StatusRequest.SerializeToString,
             instrument__pb2.StatusResponse.FromString,
             options,
@@ -127,9 +174,90 @@ class InstrumentService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/instrument.InstrumentService/SetChannel',
+            '/InstrumentService/SetChannel',
             instrument__pb2.ChannelRequest.SerializeToString,
             instrument__pb2.ChannelResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListDevices(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/InstrumentService/ListDevices',
+            instrument__pb2.Empty.SerializeToString,
+            instrument__pb2.DeviceListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ConnectDevice(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/InstrumentService/ConnectDevice',
+            instrument__pb2.DeviceRequest.SerializeToString,
+            instrument__pb2.ConnectionResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DisconnectDevice(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/InstrumentService/DisconnectDevice',
+            instrument__pb2.Empty.SerializeToString,
+            instrument__pb2.ConnectionResponse.FromString,
             options,
             channel_credentials,
             insecure,

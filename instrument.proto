@@ -1,12 +1,16 @@
-syntax = "proto3";
+// instrument.proto
 
-package instrument;
+syntax = "proto3";
 
 service InstrumentService {
   rpc GetStatus (StatusRequest) returns (StatusResponse);
   rpc SetChannel (ChannelRequest) returns (ChannelResponse);
-  // Add more RPCs as needed
+  rpc ListDevices (Empty) returns (DeviceListResponse);
+  rpc ConnectDevice (DeviceRequest) returns (ConnectionResponse);
+  rpc DisconnectDevice (Empty) returns (ConnectionResponse);
 }
+
+message Empty {}
 
 message StatusRequest {}
 message StatusResponse {
@@ -15,11 +19,24 @@ message StatusResponse {
 
 message ChannelRequest {
   int32 channel = 1;
-  double voltage = 2;
-  double current = 3;
+  float voltage = 2;
+  float current = 3;
 }
 
 message ChannelResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeviceListResponse {
+  repeated string devices = 1;
+}
+
+message DeviceRequest {
+  string address = 1;
+}
+
+message ConnectionResponse {
   bool success = 1;
   string message = 2;
 }

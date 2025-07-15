@@ -24,21 +24,29 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10instrument.proto\x12\ninstrument\"\x0f\n\rStatusRequest\" \n\x0eStatusResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"C\n\x0e\x43hannelRequest\x12\x0f\n\x07\x63hannel\x18\x01 \x01(\x05\x12\x0f\n\x07voltage\x18\x02 \x01(\x01\x12\x0f\n\x07\x63urrent\x18\x03 \x01(\x01\"3\n\x0f\x43hannelResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\x9e\x01\n\x11InstrumentService\x12\x42\n\tGetStatus\x12\x19.instrument.StatusRequest\x1a\x1a.instrument.StatusResponse\x12\x45\n\nSetChannel\x12\x1a.instrument.ChannelRequest\x1a\x1b.instrument.ChannelResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10instrument.proto\"\x07\n\x05\x45mpty\"\x0f\n\rStatusRequest\" \n\x0eStatusResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"C\n\x0e\x43hannelRequest\x12\x0f\n\x07\x63hannel\x18\x01 \x01(\x05\x12\x0f\n\x07voltage\x18\x02 \x01(\x02\x12\x0f\n\x07\x63urrent\x18\x03 \x01(\x02\"3\n\x0f\x43hannelResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"%\n\x12\x44\x65viceListResponse\x12\x0f\n\x07\x64\x65vices\x18\x01 \x03(\t\" \n\rDeviceRequest\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\"6\n\x12\x43onnectionResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\x85\x02\n\x11InstrumentService\x12,\n\tGetStatus\x12\x0e.StatusRequest\x1a\x0f.StatusResponse\x12/\n\nSetChannel\x12\x0f.ChannelRequest\x1a\x10.ChannelResponse\x12*\n\x0bListDevices\x12\x06.Empty\x1a\x13.DeviceListResponse\x12\x34\n\rConnectDevice\x12\x0e.DeviceRequest\x1a\x13.ConnectionResponse\x12/\n\x10\x44isconnectDevice\x12\x06.Empty\x1a\x13.ConnectionResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'instrument_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_STATUSREQUEST']._serialized_start=32
-  _globals['_STATUSREQUEST']._serialized_end=47
-  _globals['_STATUSRESPONSE']._serialized_start=49
-  _globals['_STATUSRESPONSE']._serialized_end=81
-  _globals['_CHANNELREQUEST']._serialized_start=83
-  _globals['_CHANNELREQUEST']._serialized_end=150
-  _globals['_CHANNELRESPONSE']._serialized_start=152
-  _globals['_CHANNELRESPONSE']._serialized_end=203
-  _globals['_INSTRUMENTSERVICE']._serialized_start=206
-  _globals['_INSTRUMENTSERVICE']._serialized_end=364
+  _globals['_EMPTY']._serialized_start=20
+  _globals['_EMPTY']._serialized_end=27
+  _globals['_STATUSREQUEST']._serialized_start=29
+  _globals['_STATUSREQUEST']._serialized_end=44
+  _globals['_STATUSRESPONSE']._serialized_start=46
+  _globals['_STATUSRESPONSE']._serialized_end=78
+  _globals['_CHANNELREQUEST']._serialized_start=80
+  _globals['_CHANNELREQUEST']._serialized_end=147
+  _globals['_CHANNELRESPONSE']._serialized_start=149
+  _globals['_CHANNELRESPONSE']._serialized_end=200
+  _globals['_DEVICELISTRESPONSE']._serialized_start=202
+  _globals['_DEVICELISTRESPONSE']._serialized_end=239
+  _globals['_DEVICEREQUEST']._serialized_start=241
+  _globals['_DEVICEREQUEST']._serialized_end=273
+  _globals['_CONNECTIONRESPONSE']._serialized_start=275
+  _globals['_CONNECTIONRESPONSE']._serialized_end=329
+  _globals['_INSTRUMENTSERVICE']._serialized_start=332
+  _globals['_INSTRUMENTSERVICE']._serialized_end=593
 # @@protoc_insertion_point(module_scope)

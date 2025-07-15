@@ -4,6 +4,9 @@ from services.instrument import get_status, set_channel_settings
 import instrument_pb2
 import instrument_pb2_grpc
 
+from instrument_pb2 import DeviceListResponse, DeviceRequest, ConnectionResponse, Empty
+from services.instrument import list_devices, connect_device, disconnect_device
+
 class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
     def GetStatus(self, request, context):
         # Call your actual status logic
@@ -21,6 +24,27 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
             return instrument_pb2.ChannelResponse(success=result[0], message=result[1])
         except Exception as e:
             return instrument_pb2.ChannelResponse(success=False, message=str(e))
+        
+    def ListDevices(self, request, context):
+        try:
+            devices = list_devices()
+            return DeviceListResponse(devices=devices)
+        except Exception as e:
+            return DeviceListResponse(devices=[f"[Error] {e}"])
+
+    def ConnectDevice(self, request, context):
+        try:
+            idn = connect_device(request.address)
+            return ConnectionResponse(success=bool(idn), message=idn or "Failed to connect")
+        except Exception as e:
+            return ConnectionResponse(success=False, message=str(e))
+
+    def DisconnectDevice(self, request, context):
+        try:
+            success = disconnect_device()
+            return ConnectionResponse(success=success, message="Disconnected" if success else "No device connected")
+        except Exception as e:
+            return ConnectionResponse(success=False, message=str(e))
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

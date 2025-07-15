@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10instrument.proto\"\x07\n\x05\x45mpty\"\x0f\n\rStatusRequest\" \n\x0eStatusResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"C\n\x0e\x43hannelRequest\x12\x0f\n\x07\x63hannel\x18\x01 \x01(\x05\x12\x0f\n\x07voltage\x18\x02 \x01(\x02\x12\x0f\n\x07\x63urrent\x18\x03 \x01(\x02\"3\n\x0f\x43hannelResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"%\n\x12\x44\x65viceListResponse\x12\x0f\n\x07\x64\x65vices\x18\x01 \x03(\t\" \n\rDeviceRequest\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\"6\n\x12\x43onnectionResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xb4\x02\n\x11InstrumentService\x12,\n\tGetStatus\x12\x0e.StatusRequest\x1a\x0f.StatusResponse\x12/\n\nSetChannel\x12\x0f.ChannelRequest\x1a\x10.ChannelResponse\x12*\n\x0bListDevices\x12\x06.Empty\x1a\x13.DeviceListResponse\x12\x34\n\rConnectDevice\x12\x0e.DeviceRequest\x1a\x13.ConnectionResponse\x12/\n\x10\x44isconnectDevice\x12\x06.Empty\x1a\x13.ConnectionResponse\x12-\n\x0eInitializeVISA\x12\x06.Empty\x1a\x13.ConnectionResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10instrument.proto\"\x07\n\x05\x45mpty\"\x0f\n\rStatusRequest\" \n\x0eStatusResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"C\n\x0e\x43hannelRequest\x12\x0f\n\x07\x63hannel\x18\x01 \x01(\x05\x12\x0f\n\x07voltage\x18\x02 \x01(\x02\x12\x0f\n\x07\x63urrent\x18\x03 \x01(\x02\"3\n\x0f\x43hannelResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"%\n\x12\x44\x65viceListResponse\x12\x0f\n\x07\x64\x65vices\x18\x01 \x03(\t\" \n\rDeviceRequest\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\"6\n\x12\x43onnectionResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"/\n\rOutputRequest\x12\x0f\n\x07\x63hannel\x18\x01 \x01(\x05\x12\r\n\x05state\x18\x02 \x01(\x08\"2\n\x0eOutputResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xe2\x02\n\x11InstrumentService\x12,\n\tGetStatus\x12\x0e.StatusRequest\x1a\x0f.StatusResponse\x12/\n\nSetChannel\x12\x0f.ChannelRequest\x1a\x10.ChannelResponse\x12*\n\x0bListDevices\x12\x06.Empty\x1a\x13.DeviceListResponse\x12\x34\n\rConnectDevice\x12\x0e.DeviceRequest\x1a\x13.ConnectionResponse\x12/\n\x10\x44isconnectDevice\x12\x06.Empty\x1a\x13.ConnectionResponse\x12-\n\x0eInitializeVISA\x12\x06.Empty\x1a\x13.ConnectionResponse\x12,\n\tSetOutput\x12\x0e.OutputRequest\x1a\x0f.OutputResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -47,6 +47,10 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_DEVICEREQUEST']._serialized_end=273
   _globals['_CONNECTIONRESPONSE']._serialized_start=275
   _globals['_CONNECTIONRESPONSE']._serialized_end=329
-  _globals['_INSTRUMENTSERVICE']._serialized_start=332
-  _globals['_INSTRUMENTSERVICE']._serialized_end=640
+  _globals['_OUTPUTREQUEST']._serialized_start=331
+  _globals['_OUTPUTREQUEST']._serialized_end=378
+  _globals['_OUTPUTRESPONSE']._serialized_start=380
+  _globals['_OUTPUTRESPONSE']._serialized_end=430
+  _globals['_INSTRUMENTSERVICE']._serialized_start=433
+  _globals['_INSTRUMENTSERVICE']._serialized_end=787
 # @@protoc_insertion_point(module_scope)

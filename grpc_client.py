@@ -54,6 +54,15 @@ def disconnect_remote_device():
         stub = instrument_pb2_grpc.InstrumentServiceStub(channel)
         response = stub.DisconnectDevice(Empty())
         return response.success, response.message
+    
+def set_output(channel: int, state: bool):
+    with grpc.insecure_channel(GRPC_ADDRESS) as channel_conn:
+        stub = instrument_pb2_grpc.InstrumentServiceStub(channel_conn)
+        request = instrument_pb2.OutputRequest(channel=channel, state=state)
+        response = stub.SetOutput(request)
+        if not response.success:
+            raise Exception(f"SetOutput failed: {response.message}")
+
 
 async def main():
     ok = initialize_visa()

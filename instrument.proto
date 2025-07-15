@@ -9,6 +9,7 @@ service InstrumentService {
   rpc ConnectDevice (DeviceRequest) returns (ConnectionResponse);
   rpc DisconnectDevice (Empty) returns (ConnectionResponse);
   rpc InitializeVISA (Empty) returns (ConnectionResponse);
+  rpc SetOutput(OutputRequest) returns (OutputResponse);
 }
 
 message Empty {}
@@ -42,3 +43,12 @@ message ConnectionResponse {
   string message = 2;
 }
 
+message OutputRequest {
+    int32 channel = 1;
+    bool state = 2;
+}
+
+message OutputResponse {
+    bool success = 1;
+    string message = 2;
+}

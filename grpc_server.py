@@ -55,6 +55,21 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
             return ConnectionResponse(success=success, message="Disconnected" if success else "No device connected")
         except Exception as e:
             return ConnectionResponse(success=False, message=str(e))
+        
+    def SetOutput(self, request, context):
+        try:
+            channel = request.channel
+            state = request.state
+
+            # Example: send SCPI commands via PyVISA
+            self.instrument.write(f"INST:NSEL {channel}")
+            self.instrument.write(f"OUTP {'ON' if state else 'OFF'}")
+
+            return instrument_pb2.OutputResponse(success=True, message="Output updated")
+
+        except Exception as e:
+            return instrument_pb2.OutputResponse(success=False, message=str(e))
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

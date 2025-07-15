@@ -64,6 +64,11 @@ class InstrumentServiceStub(object):
                 request_serializer=instrument__pb2.Empty.SerializeToString,
                 response_deserializer=instrument__pb2.ConnectionResponse.FromString,
                 _registered_method=True)
+        self.SetOutput = channel.unary_unary(
+                '/InstrumentService/SetOutput',
+                request_serializer=instrument__pb2.OutputRequest.SerializeToString,
+                response_deserializer=instrument__pb2.OutputResponse.FromString,
+                _registered_method=True)
 
 
 class InstrumentServiceServicer(object):
@@ -105,6 +110,12 @@ class InstrumentServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SetOutput(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_InstrumentServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -137,6 +148,11 @@ def add_InstrumentServiceServicer_to_server(servicer, server):
                     servicer.InitializeVISA,
                     request_deserializer=instrument__pb2.Empty.FromString,
                     response_serializer=instrument__pb2.ConnectionResponse.SerializeToString,
+            ),
+            'SetOutput': grpc.unary_unary_rpc_method_handler(
+                    servicer.SetOutput,
+                    request_deserializer=instrument__pb2.OutputRequest.FromString,
+                    response_serializer=instrument__pb2.OutputResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -301,6 +317,33 @@ class InstrumentService(object):
             '/InstrumentService/InitializeVISA',
             instrument__pb2.Empty.SerializeToString,
             instrument__pb2.ConnectionResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SetOutput(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/InstrumentService/SetOutput',
+            instrument__pb2.OutputRequest.SerializeToString,
+            instrument__pb2.OutputResponse.FromString,
             options,
             channel_credentials,
             insecure,

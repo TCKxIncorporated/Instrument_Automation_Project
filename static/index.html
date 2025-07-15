@@ -127,9 +127,16 @@
 
             async function scanDevices() {
                 try {
-                    const devices = await apiCall('/api/devices');
+                    const result = await apiCall('/api/devices');
+                    const devices = result.devices;
                     const select = document.getElementById('deviceSelect');
                     select.innerHTML = '';
+                    const defaultOption = document.createElement('option');
+                    defaultOption.textContent = 'Select a device';
+                    defaultOption.disabled = true;
+                    defaultOption.selected = true;
+                    select.appendChild(defaultOption);
+
                     devices.forEach(device => {
                         const option = document.createElement('option');
                         option.value = device;

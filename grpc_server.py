@@ -30,6 +30,7 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
         try:
             result = set_channel_settings(
                 channel=request.channel,
+                limit=request.voltage_limit,
                 voltage=request.voltage,
                 current=request.current
             )  # Should return (success: bool, message: str)

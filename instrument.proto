@@ -21,7 +21,7 @@ message StatusResponse {
 
 message ChannelRequest {
   int32 channel = 1;
-  float limit = 2;
+  float voltage_limit = 2;
   float voltage = 3;
   float current = 4;
 }

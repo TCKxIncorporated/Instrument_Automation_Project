@@ -1,8 +1,9 @@
 import grpc
 from concurrent import futures
-from services.instrument import get_status, set_channel_settings
+from services.instrument import set_channel_settings
 import instrument_pb2
 import instrument_pb2_grpc
+from api import routes
 
 from instrument_pb2 import DeviceListResponse, DeviceRequest, ConnectionResponse, Empty
 from services.instrument import list_devices, connect_device, disconnect_device, initialize_visa
@@ -19,7 +20,7 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
 
     def GetStatus(self, request, context):
         # Call your actual status logic
-        status = get_status()  # Should return a string or dict with status info
+        status = routes.get_status()  # Should return a string or dict with status info
         return instrument_pb2.StatusResponse(status=str(status))
 
     def SetChannel(self, request, context):

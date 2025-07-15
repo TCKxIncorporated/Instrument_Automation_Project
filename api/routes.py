@@ -43,7 +43,8 @@ def connect(request: dict):
 def set_settings(settings: PowerSupplySettings):
     success, message = instrument.set_channel_settings(
         channel=settings.channel,
-        voltage=settings.voltage,
+        voltage=settings.voltage_limit,
+        voltage=settings.voltage_set,
         current=settings.current
     )
 

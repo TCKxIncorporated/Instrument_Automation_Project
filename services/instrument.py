@@ -45,7 +45,7 @@ def disconnect_device():
         print(f"[VISA ERROR] Could not disconnect: {e}")
         return False
 
-def set_channel_settings(channel, voltage, current):
+def set_channel_settings(channel, voltageLimit, voltage, current):
     """
     This is for local VISA-based control (on the gRPC server).
     """
@@ -54,6 +54,7 @@ def set_channel_settings(channel, voltage, current):
             return False, "Instrument not connected"
         
         instrument.write(f"INST:NSEL {channel}")
+        instrument.write(f"VOLT:LIMIT {voltageLimit}")
         instrument.write(f"VOLT {voltage}")
         instrument.write(f"CURR {current}")
         

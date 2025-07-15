@@ -41,8 +41,19 @@ def connect(request: dict):
 
 @router.post("/settings")
 def set_settings(settings: PowerSupplySettings):
-    instrument.set_channel_settings(
-        channel=settings.channel, voltage=settings.voltage, current=settings.current)
+    success, message = instrument.set_channel_settings(
+        channel=settings.channel,
+        voltage=settings.voltage,
+        current=settings.current
+    )
+
+    if not success:
+        raise HTTPException(status_code=500, detail=message)
+
+    device_status["last_settings"] = settings.dict()
+    device_status["current_channel"] = settings.channel
+
+    return {"success": True, "message": message}
 
 @router.get("/plot-data")
 def plot_data():

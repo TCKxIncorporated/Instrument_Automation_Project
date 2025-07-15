@@ -47,9 +47,7 @@ def disconnect_device():
 
 def set_channel_settings(channel, voltage, current):
     """
-    Set the voltage and current for a specific channel on the instrument.
     This is for local VISA-based control (on the gRPC server).
-    Returns (success: bool, message: str)
     """
     try:
         if instrument is None:
@@ -64,3 +62,4 @@ def set_channel_settings(channel, voltage, current):
     except Exception as e:
         print(f"[VISA ERROR] {e}")
         return False, str(e)
+

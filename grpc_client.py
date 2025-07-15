@@ -28,14 +28,17 @@ def get_status(stub):
     response = stub.GetStatus(request)
     print(f"Status: {response.status}")
 
-def set_channel(stub, channel, voltage, current):
-    request = instrument_pb2.ChannelRequest(
-        channel=channel,
-        voltage=voltage,
-        current=current
-    )
-    response = stub.SetChannel(request)
-    print(f"SetChannel success: {response.success}, message: {response.message}")
+def set_channel_settings(channel: int, voltage: float, current: float):
+    with grpc.insecure_channel(GRPC_ADDRESS) as channel_conn:
+        stub = instrument_pb2_grpc.InstrumentServiceStub(channel_conn)
+        request = instrument_pb2.ChannelRequest(
+            channel=channel,
+            voltage=voltage,
+            current=current
+        )
+        response = stub.SetChannel(request)
+        print(f"SetChannel via gRPC: success={response.success}, message={response.message}")
+        return response.success, response.message
 
 def list_remote_devices():
     with grpc.insecure_channel(GRPC_ADDRESS) as channel:

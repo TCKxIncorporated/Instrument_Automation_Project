@@ -59,6 +59,11 @@ class InstrumentServiceStub(object):
                 request_serializer=instrument__pb2.Empty.SerializeToString,
                 response_deserializer=instrument__pb2.ConnectionResponse.FromString,
                 _registered_method=True)
+        self.InitializeVISA = channel.unary_unary(
+                '/InstrumentService/InitializeVISA',
+                request_serializer=instrument__pb2.Empty.SerializeToString,
+                response_deserializer=instrument__pb2.ConnectionResponse.FromString,
+                _registered_method=True)
 
 
 class InstrumentServiceServicer(object):
@@ -94,6 +99,12 @@ class InstrumentServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def InitializeVISA(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_InstrumentServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -119,6 +130,11 @@ def add_InstrumentServiceServicer_to_server(servicer, server):
             ),
             'DisconnectDevice': grpc.unary_unary_rpc_method_handler(
                     servicer.DisconnectDevice,
+                    request_deserializer=instrument__pb2.Empty.FromString,
+                    response_serializer=instrument__pb2.ConnectionResponse.SerializeToString,
+            ),
+            'InitializeVISA': grpc.unary_unary_rpc_method_handler(
+                    servicer.InitializeVISA,
                     request_deserializer=instrument__pb2.Empty.FromString,
                     response_serializer=instrument__pb2.ConnectionResponse.SerializeToString,
             ),
@@ -256,6 +272,33 @@ class InstrumentService(object):
             request,
             target,
             '/InstrumentService/DisconnectDevice',
+            instrument__pb2.Empty.SerializeToString,
+            instrument__pb2.ConnectionResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def InitializeVISA(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/InstrumentService/InitializeVISA',
             instrument__pb2.Empty.SerializeToString,
             instrument__pb2.ConnectionResponse.FromString,
             options,

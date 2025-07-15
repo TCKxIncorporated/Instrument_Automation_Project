@@ -8,6 +8,7 @@ service InstrumentService {
   rpc ListDevices (Empty) returns (DeviceListResponse);
   rpc ConnectDevice (DeviceRequest) returns (ConnectionResponse);
   rpc DisconnectDevice (Empty) returns (ConnectionResponse);
+  rpc InitializeVISA (Empty) returns (ConnectionResponse);
 }
 
 message Empty {}
@@ -40,3 +41,4 @@ message ConnectionResponse {
   bool success = 1;
   string message = 2;
 }
+

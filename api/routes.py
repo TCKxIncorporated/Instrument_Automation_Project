@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from models.schema import PowerSupplySettings, OutputControl
-from services import instrument, monitor
+#from services import instrument, monitor
 from utils.helpers import current_timestamp
+import grpc_client as instrument
+from services import monitor
 
 router = APIRouter()
 

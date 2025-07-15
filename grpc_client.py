@@ -2,9 +2,26 @@ import grpc
 import instrument_pb2
 import instrument_pb2_grpc
 from instrument_pb2 import DeviceRequest, Empty
+import grpc
+from instrument_pb2 import Empty, DeviceRequest
+from instrument_pb2_grpc import InstrumentServiceStub
 
 GRPC_ADDRESS = '172.20.10.5:50051'
 
+def initialize_visa():
+    with grpc.insecure_channel(GRPC_ADDRESS) as channel:
+        stub = InstrumentServiceStub(channel)
+        response = stub.InitializeVISA(Empty())
+        print(f"InitializeVISA: success={response.success}, message={response.message}")
+        return response.success
+
+def list_devices():
+    with grpc.insecure_channel(GRPC_ADDRESS) as channel:
+        stub = InstrumentServiceStub(channel)
+        response = stub.ListDevices(Empty())
+        print("Devices:", response.devices)
+        return response.devices
+    
 def get_status(stub):
     request = instrument_pb2.StatusRequest()
     response = stub.GetStatus(request)
@@ -37,11 +54,10 @@ def disconnect_remote_device():
         response = stub.DisconnectDevice(Empty())
         return response.success, response.message
 
-def main():
+async def main():
     with grpc.insecure_channel(GRPC_ADDRESS) as channel:
         stub = instrument_pb2_grpc.InstrumentServiceStub(channel)
-        get_status(stub)
-        set_channel(stub, channel=1, voltage=5.0, current=1.0)
+        
 
 if __name__ == "__main__":
     main()

@@ -5,9 +5,18 @@ import instrument_pb2
 import instrument_pb2_grpc
 
 from instrument_pb2 import DeviceListResponse, DeviceRequest, ConnectionResponse, Empty
-from services.instrument import list_devices, connect_device, disconnect_device
+from services.instrument import list_devices, connect_device, disconnect_device, initialize_visa
 
 class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
+
+    def InitializeVISA(self, request, context):
+        try:
+            success = initialize_visa()
+            message = "VISA initialized" if success else "Failed to initialize VISA"
+            return ConnectionResponse(success=success, message=message)
+        except Exception as e:
+            return ConnectionResponse(success=False, message=str(e))
+
     def GetStatus(self, request, context):
         # Call your actual status logic
         status = get_status()  # Should return a string or dict with status info

@@ -7,6 +7,7 @@ from api import routes
 
 from instrument_pb2 import DeviceListResponse, DeviceRequest, ConnectionResponse, Empty
 from services.instrument import list_devices, connect_device, disconnect_device, initialize_visa
+from services.instrument import instrument as inst
 
 class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
 
@@ -62,8 +63,8 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
             state = request.state
 
             # Example: send SCPI commands via PyVISA
-            self.instrument.write(f"INST:NSEL {channel}")
-            self.instrument.write(f"OUTP {'ON' if state else 'OFF'}")
+            inst.write(f"INST:NSEL {channel}")
+            inst.write(f"OUTP {'ON' if state else 'OFF'}")
 
             return instrument_pb2.OutputResponse(success=True, message="Output updated")
 

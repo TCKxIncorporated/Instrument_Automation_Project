@@ -45,7 +45,9 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
 
     def ConnectDevice(self, request, context):
         try:
+            print(f"[gRPC] Connecting to {request.address}")
             idn = connect_device(request.address)
+            print(f"[gRPC] Connected: {idn}, inst: {inst}")
             return ConnectionResponse(success=bool(idn), message=idn or "Failed to connect")
         except Exception as e:
             return ConnectionResponse(success=False, message=str(e))
@@ -58,6 +60,9 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
             return ConnectionResponse(success=False, message=str(e))
         
     def SetOutput(self, request, context):
+        if inst is None:
+            return instrument_pb2.OutputResponse(success=False, message="Instrument not connected")
+
         try:
             channel = request.channel
             state = request.state

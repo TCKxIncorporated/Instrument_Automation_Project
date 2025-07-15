@@ -21,6 +21,7 @@ def list_devices():
         return []
 
 def connect_device(address):
+    print(f"[VISA] Connecting to device at {address}")
     global instrument
     try:
         instrument = rm.open_resource(address)

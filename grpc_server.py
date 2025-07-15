@@ -7,7 +7,8 @@ from api import routes
 
 from instrument_pb2 import DeviceListResponse, DeviceRequest, ConnectionResponse, Empty
 from services.instrument import list_devices, connect_device, disconnect_device, initialize_visa
-from services.instrument import instrument as inst
+import services.instrument as instr_module
+
 
 class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
 
@@ -47,7 +48,7 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
         try:
             print(f"[gRPC] Connecting to {request.address}")
             idn = connect_device(request.address)
-            print(f"[gRPC] Connected: {idn}, inst: {inst}")
+            print(f"[gRPC] Connected: {idn}, inst: {instr_module.instrument}")
             return ConnectionResponse(success=bool(idn), message=idn or "Failed to connect")
         except Exception as e:
             return ConnectionResponse(success=False, message=str(e))
@@ -60,16 +61,16 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
             return ConnectionResponse(success=False, message=str(e))
         
     def SetOutput(self, request, context):
-        if inst is None:
+
+        if instr_module.instrument is None:
             return instrument_pb2.OutputResponse(success=False, message="Instrument not connected")
 
         try:
             channel = request.channel
             state = request.state
 
-            # Example: send SCPI commands via PyVISA
-            inst.write(f"INST:NSEL {channel}")
-            inst.write(f"OUTP {'ON' if state else 'OFF'}")
+            instr_module.instrument.write(f"INST:NSEL {channel}")
+            instr_module.instrument.write(f"OUTP {'ON' if state else 'OFF'}")
 
             return instrument_pb2.OutputResponse(success=True, message="Output updated")
 

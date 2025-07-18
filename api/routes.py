@@ -7,7 +7,11 @@ from services.instrument import instrument  as inst
 from services import monitor
 from pydantic import BaseModel
 from typing import List
-from pydantic import BaseModel
+
+from fastapi.responses import StreamingResponse
+import json
+import grpc_client as instrument
+
 
 class ChannelInput(BaseModel):
     channel: int
@@ -70,6 +74,28 @@ def plot_data():
     ch = device_status["current_channel"]
     print(f"[DEBUG] current_channel = {ch}, type = {type(ch)}")
     return instrument.get_plot_data(int(ch))  # force cast to int to be safe
+
+@router.get("/api/plot-data/stream")
+def plot_data_stream():
+    """
+    Server‐Sent Events endpoint that pushes each VoltageReading as it arrives.
+    """
+    ch     = device_status["current_channel"]
+    stream = instrument.stream_plot_data(ch)
+
+    def event_generator():
+        for reading in stream:
+            payload = {
+                "time":    reading.timestamp,
+                "voltage": reading.voltage,
+                "channel": reading.channel
+            }
+            # SSE format: “data: <json>\n\n”
+            yield f"data: {json.dumps(payload)}\n\n"
+
+    return StreamingResponse(event_generator(),
+                             media_type="text/event-stream")
+
 
 @router.post("/clear-data")
 def clear_plot():

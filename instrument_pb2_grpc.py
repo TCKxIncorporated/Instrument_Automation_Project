@@ -74,10 +74,15 @@ class InstrumentServiceStub(object):
                 request_serializer=instrument__pb2.ReadChannel.SerializeToString,
                 response_deserializer=instrument__pb2.Empty.FromString,
                 _registered_method=True)
-        self.MonitorVoltage = channel.unary_unary(
+        self.MonitorVoltage = channel.unary_stream(
                 '/InstrumentService/MonitorVoltage',
                 request_serializer=instrument__pb2.ReadChannel.SerializeToString,
                 response_deserializer=instrument__pb2.VoltageReading.FromString,
+                _registered_method=True)
+        self.ClearData = channel.unary_unary(
+                '/InstrumentService/ClearData',
+                request_serializer=instrument__pb2.Empty.SerializeToString,
+                response_deserializer=instrument__pb2.Empty.FromString,
                 _registered_method=True)
 
 
@@ -138,6 +143,12 @@ class InstrumentServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ClearData(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_InstrumentServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -181,10 +192,15 @@ def add_InstrumentServiceServicer_to_server(servicer, server):
                     request_deserializer=instrument__pb2.ReadChannel.FromString,
                     response_serializer=instrument__pb2.Empty.SerializeToString,
             ),
-            'MonitorVoltage': grpc.unary_unary_rpc_method_handler(
+            'MonitorVoltage': grpc.unary_stream_rpc_method_handler(
                     servicer.MonitorVoltage,
                     request_deserializer=instrument__pb2.ReadChannel.FromString,
                     response_serializer=instrument__pb2.VoltageReading.SerializeToString,
+            ),
+            'ClearData': grpc.unary_unary_rpc_method_handler(
+                    servicer.ClearData,
+                    request_deserializer=instrument__pb2.Empty.FromString,
+                    response_serializer=instrument__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -424,12 +440,39 @@ class InstrumentService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(
+        return grpc.experimental.unary_stream(
             request,
             target,
             '/InstrumentService/MonitorVoltage',
             instrument__pb2.ReadChannel.SerializeToString,
             instrument__pb2.VoltageReading.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ClearData(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/InstrumentService/ClearData',
+            instrument__pb2.Empty.SerializeToString,
+            instrument__pb2.Empty.FromString,
             options,
             channel_credentials,
             insecure,

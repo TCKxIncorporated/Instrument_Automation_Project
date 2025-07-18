@@ -4,7 +4,7 @@ from services.instrument import set_channel_settings
 import instrument_pb2
 import instrument_pb2_grpc
 from api import routes
-
+import time
 from instrument_pb2 import DeviceListResponse, DeviceRequest, ConnectionResponse, Empty
 from services.instrument import list_devices, connect_device, disconnect_device, initialize_visa
 import services.instrument as instr_module
@@ -88,15 +88,18 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
         monitor.start_monitoring(instr_module.instrument, request.channel, True)
         return instrument_pb2.Empty()
         
+
+
     def MonitorVoltage(self, request, context):
-        reading = monitor.get_plot_data(request.channel)
-        print(reading["time"], reading["voltage"], reading["channel"])
-        print("Monitoring voltage from server")
-        return instrument_pb2.VoltageReading(
-            timestamp=reading["time"],
-            voltage=reading["voltage"],
-            channel=reading["channel"]
-        )
+        while True:
+            reading = monitor.get_plot_data(request.channel)
+            yield instrument_pb2.VoltageReading(
+                timestamp=reading["time"],
+                voltage= reading["voltage"],
+                channel= reading["channel"],
+            )
+            time.sleep(1)
+
 
     def ClearData(self, request, context):
         monitor.clear_data()

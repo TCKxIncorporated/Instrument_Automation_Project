@@ -77,17 +77,15 @@ def start_monitoring(channel):
         response = stub.StartMonitoring(request)
         return instrument_pb2.Empty()
     
-def get_plot_data(channel):
-    with grpc.insecure_channel(GRPC_ADDRESS) as channel_conn:
-        stub = instrument_pb2_grpc.InstrumentServiceStub(channel_conn)
-        request = instrument_pb2.ReadChannel(channel=channel)
-        response = stub.MonitorVoltage(request)
-        print(response.timestamp, response.voltage, response.channel)
-        return {
-            "time": response.timestamp,
-            "voltage": response.voltage,
-            "channel": response.channel
-        }
+def stream_plot_data(channel: int):
+    """
+    Return the server‐streaming iterator for MonitorVoltage.
+    Caller is responsible for iterating over it.
+    """
+    chan = grpc.insecure_channel(GRPC_ADDRESS)
+    stub = instrument_pb2_grpc.InstrumentServiceStub(chan)
+    req  = instrument_pb2.ReadChannel(channel=channel)
+    return stub.MonitorVoltage(req)   # ← this is an iterator of VoltageReading
 
 def clear_data():
     with grpc.insecure_channel(GRPC_ADDRESS) as channel_conn:

@@ -67,7 +67,9 @@ def set_settings(settings: PowerSupplySettings):
 
 @router.get("/plot-data")
 def plot_data():
-    return instrument.get_plot_data(device_status["current_channel"])
+    ch = device_status["current_channel"]
+    print(f"[DEBUG] current_channel = {ch}, type = {type(ch)}")
+    return instrument.get_plot_data(int(ch))  # force cast to int to be safe
 
 @router.post("/clear-data")
 def clear_plot():

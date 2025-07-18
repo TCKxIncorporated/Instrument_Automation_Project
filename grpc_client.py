@@ -82,8 +82,9 @@ def get_plot_data(channel):
         stub = instrument_pb2_grpc.InstrumentServiceStub(channel_conn)
         request = instrument_pb2.ReadChannel(channel=channel)
         response = stub.MonitorVoltage(request)
+        print(response.timestamp, response.voltage, response.channel)
         return {
-            "time": response.time,
+            "time": response.timestamp,
             "voltage": response.voltage,
             "channel": response.channel
         }

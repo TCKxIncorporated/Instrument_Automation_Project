@@ -121,7 +121,7 @@
 
                 // Update server
                 if (currentDevice) {
-                    apiCall('/api/set-channel', 'POST', { channel: channel });
+                    apiCall('/api/set-channel', 'POST', { channel: parseInt(channel) });
                 }
             }
 

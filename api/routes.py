@@ -35,7 +35,7 @@ def connect(request: dict):
 
     idn = instrument.connect_remote_device(address)
     device_status.update({"connected": True, "device_info": idn})
-    monitor.start_monitoring(inst, 1, True)
+    instrument.start_monitoring(1)
     return {"device_info": idn}
 
 
@@ -58,11 +58,11 @@ def set_settings(settings: PowerSupplySettings):
 
 @router.get("/plot-data")
 def plot_data():
-    return monitor.get_plot_data(device_status["current_channel"])
+    return instrument.get_plot_data(device_status["current_channel"])
 
 @router.post("/clear-data")
 def clear_plot():
-    monitor.clear_data()
+    instrument.clear_data()
     return {"message": "Data cleared"}
 
 @router.get("/status")

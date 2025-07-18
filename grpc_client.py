@@ -70,6 +70,30 @@ def set_output(channel, state):
         response = stub.SetOutput(request)
         return response.success, response.message
 
+def start_monitoring(channel):
+    with grpc.insecure_channel(GRPC_ADDRESS) as channel_conn:
+        stub = instrument_pb2_grpc.InstrumentServiceStub(channel_conn)
+        request = instrument_pb2.ReadChannel(channel=channel)
+        response = stub.StartMonitoring(request)
+        return response.success, response.message
+    
+def get_voltage_data(channel):
+    with grpc.insecure_channel(GRPC_ADDRESS) as channel_conn:
+        stub = instrument_pb2_grpc.InstrumentServiceStub(channel_conn)
+        request = instrument_pb2.ReadChannel(channel=channel)
+        response = stub.GetVoltageData(request)
+        return {
+            "time": response.time,
+            "voltage": response.voltage,
+            "channel": response.channel
+        }
+
+def clear_data():
+    with grpc.insecure_channel(GRPC_ADDRESS) as channel_conn:
+        stub = instrument_pb2_grpc.InstrumentServiceStub(channel_conn)
+        response = stub.ClearData(Empty())
+        return response.success, response.message
+
 async def main():
     ok = initialize_visa()
     if not ok:

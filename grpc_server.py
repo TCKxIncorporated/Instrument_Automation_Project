@@ -74,6 +74,11 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
             instr_module.instrument.write(f"INST:NSEL {channel}")
             instr_module.instrument.write(f"OUTP {'ON' if state else 'OFF'}")
 
+            if instr_module.instrument.query("OUTP?") == {'OFF'}:
+                monitor.stop_monitoring()
+            else:
+                monitor.start_monitoring(instr_module.instrument, channel, True)
+
             return instrument_pb2.OutputResponse(success=True, message="Output updated")
 
         except Exception as e:
@@ -91,6 +96,9 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
             channel=reading["channel"]
         )
 
+    def ClearData(self, request, context):
+        monitor.clear_data()
+        return instrument_pb2.Empty()
 
 
 def serve():

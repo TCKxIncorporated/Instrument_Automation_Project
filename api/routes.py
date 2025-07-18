@@ -75,7 +75,7 @@ def plot_data():
     print(f"[DEBUG] current_channel = {ch}, type = {type(ch)}")
     return instrument.get_plot_data(int(ch))  # force cast to int to be safe
 
-@router.get("/api/plot-data/stream")
+@router.get("/plot-data/stream")
 def plot_data_stream():
     """
     Server‐Sent Events endpoint that pushes each VoltageReading as it arrives.

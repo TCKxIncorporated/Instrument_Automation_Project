@@ -55,7 +55,7 @@ def connect(request: dict):
 @router.post("/settings")
 def set_settings(settings: PowerSupplySettings):
     success, message = instrument.set_channel_settings(
-        channel=settings.channel,
+        channel=device_status["current_channel"],
         limit=settings.voltage_limit,
         voltage=settings.voltage_set,
         current=settings.current

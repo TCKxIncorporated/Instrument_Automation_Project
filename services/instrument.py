@@ -7,7 +7,7 @@ from pyvisa import VisaIOError
 rm = None
 instrument = None
 
-def initialize_visa(backend: str = '@ni') -> bool:
+def initialize_visa(backend: str = '') -> bool:
     """
     Initialize the PyVISA ResourceManager.
     Pass backend='@py' to use pyvisa‑py instead of NI‑VISA.
@@ -15,8 +15,8 @@ def initialize_visa(backend: str = '@ni') -> bool:
     global rm
     try:
         # Pick your backend here:
-        rm = pyvisa.ResourceManager(backend)
-        print(f"[VISA] Resource Manager initialized using {backend}")
+        rm = pyvisa.ResourceManager()
+    
         return True
     except Exception as e:
         print(f"[VISA ERROR] Failed to initialize VISA: {e}")

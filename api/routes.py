@@ -24,7 +24,7 @@ device_status = {
     "last_settings": {},
     "output_state": False,
     "timestamp": "",
-    "current_channel": 1
+    "current_channel": 0
 }
 
 class DeviceListResponse(BaseModel):
@@ -55,7 +55,7 @@ def connect(request: dict):
 @router.post("/settings")
 def set_settings(settings: PowerSupplySettings):
     success, message = instrument.set_channel_settings(
-        channel=device_status["current_channel"],
+        channel=settings.channel,
         limit=settings.voltage_limit,
         voltage=settings.voltage_set,
         current=settings.current

@@ -5,7 +5,7 @@ from instrument_pb2 import DeviceRequest, Empty
 from instrument_pb2_grpc import InstrumentServiceStub
 import asyncio
 
-GRPC_ADDRESS = '172.20.10.5:50051'
+GRPC_ADDRESS = '172.20.10.3:50051'
 
 def initialize_visa():
     with grpc.insecure_channel(GRPC_ADDRESS) as channel:
@@ -75,13 +75,13 @@ def start_monitoring(channel):
         stub = instrument_pb2_grpc.InstrumentServiceStub(channel_conn)
         request = instrument_pb2.ReadChannel(channel=channel)
         response = stub.StartMonitoring(request)
-        return response.success, response.message
+        return instrument_pb2.Empty()
     
-def get_voltage_data(channel):
+def get_plot_data(channel):
     with grpc.insecure_channel(GRPC_ADDRESS) as channel_conn:
         stub = instrument_pb2_grpc.InstrumentServiceStub(channel_conn)
         request = instrument_pb2.ReadChannel(channel=channel)
-        response = stub.GetVoltageData(request)
+        response = stub.MonitorVoltage(request)
         return {
             "time": response.time,
             "voltage": response.voltage,
@@ -92,7 +92,7 @@ def clear_data():
     with grpc.insecure_channel(GRPC_ADDRESS) as channel_conn:
         stub = instrument_pb2_grpc.InstrumentServiceStub(channel_conn)
         response = stub.ClearData(Empty())
-        return response.success, response.message
+        return instrument_pb2.Empty()
 
 async def main():
     ok = initialize_visa()

@@ -10,6 +10,7 @@ service InstrumentService {
   rpc DisconnectDevice (Empty) returns (ConnectionResponse);
   rpc InitializeVISA (Empty) returns (ConnectionResponse);
   rpc SetOutput(OutputRequest) returns (OutputResponse);
+  rpc MonitorVoltage(ReadChannel) returns (VoltageReading);
 }
 
 message Empty {}
@@ -52,4 +53,14 @@ message OutputRequest {
 message OutputResponse {
     bool success = 1;
     string message = 2;
+}
+
+message ReadChannel {
+  int32 channel = 1;
+}
+
+message VoltageReading {
+  string timestamp = 1;
+  float voltage = 2;
+  int32 channel = 3;
 }

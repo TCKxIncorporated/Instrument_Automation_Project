@@ -8,6 +8,7 @@ from api import routes
 from instrument_pb2 import DeviceListResponse, DeviceRequest, ConnectionResponse, Empty
 from services.instrument import list_devices, connect_device, disconnect_device, initialize_visa
 import services.instrument as instr_module
+from services import monitor
 
 
 class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
@@ -77,7 +78,8 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
 
         except Exception as e:
             return instrument_pb2.OutputResponse(success=False, message=str(e))
-
+        
+ 
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

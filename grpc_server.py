@@ -90,7 +90,7 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
         
     def MonitorVoltage(self, request, context):
         reading = monitor.get_plot_data(request.channel)
-        return instrument_pb2.VoltageDataResponse(
+        return instrument_pb2.VoltageReading(
             time=reading["time"],
             voltage=reading["voltage"],
             channel=reading["channel"]

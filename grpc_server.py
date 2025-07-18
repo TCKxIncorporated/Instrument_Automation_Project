@@ -79,7 +79,19 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
         except Exception as e:
             return instrument_pb2.OutputResponse(success=False, message=str(e))
         
- 
+    def StartMonitoring(self, request, context):
+        monitor.start_monitoring(instr_module.instrument, request.channel, True)
+        return instrument_pb2.Empty()
+        
+    def GetVoltageData(self, request, context):
+        reading = monitor.get_plot_data(request.channel)
+        return instrument_pb2.VoltageDataResponse(
+            time=reading["time"],
+            voltage=reading["voltage"],
+            channel=reading["channel"]
+        )
+
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

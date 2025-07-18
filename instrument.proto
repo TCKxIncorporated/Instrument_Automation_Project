@@ -10,6 +10,7 @@ service InstrumentService {
   rpc DisconnectDevice (Empty) returns (ConnectionResponse);
   rpc InitializeVISA (Empty) returns (ConnectionResponse);
   rpc SetOutput(OutputRequest) returns (OutputResponse);
+  rpc StartMonitoring (ReadChannel) returns (Empty);
   rpc MonitorVoltage(ReadChannel) returns (VoltageReading);
 }
 

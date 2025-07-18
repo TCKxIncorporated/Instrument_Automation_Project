@@ -7,7 +7,10 @@ from services.instrument import instrument  as inst
 from services import monitor
 from pydantic import BaseModel
 from typing import List
+from pydantic import BaseModel
 
+class ChannelInput(BaseModel):
+    channel: int
 
 router = APIRouter()
 
@@ -22,6 +25,12 @@ device_status = {
 
 class DeviceListResponse(BaseModel):
     devices: List[str]
+
+@router.post("/api/set-channel")
+def set_channel(payload: ChannelInput):
+    device_status["current_channel"] = payload.channel
+    return {"message": f"Channel set to {payload.channel}"}
+
 
 @router.get("/devices", response_model=DeviceListResponse)
 def get_devices():

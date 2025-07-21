@@ -24,13 +24,13 @@ device_status = {
     "last_settings": {},
     "output_state": False,
     "timestamp": "",
-    "current_channel": 0
+    "current_channel": 1
 }
 
 class DeviceListResponse(BaseModel):
     devices: List[str]
 
-@router.post("/api/set-channel")
+@router.post("/set-channel")
 def set_channel(payload: ChannelInput):
     device_status["current_channel"] = payload.channel
     return {"message": f"Channel set to {payload.channel}"}

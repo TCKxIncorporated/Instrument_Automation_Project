@@ -132,7 +132,7 @@
                 document.getElementById('connectionStatus').textContent = 'Connected: ' + res.device_info;
                 document.getElementById('connectionStatus').className = 'status connected';
                 currentDevice = device;
-                // Leave monitoring off until user toggles power
+                updatePowerButton();
             } catch (e) {
                 document.getElementById('connectionStatus').textContent = 'Connection Failed';
                 document.getElementById('connectionStatus').className = 'status disconnected';
@@ -161,7 +161,7 @@
 
         function startPlotPolling() {
             if (plotInterval) return;
-            plotInterval = setInterval(updatePlot, 500);
+            plotInterval = setInterval(updatePlot, 1000);
             updatePlot();
         }
 
@@ -175,7 +175,7 @@
         function restartPlotPolling() {
             // Purge and reinitialize chart for new channel if needed
             stopPlotPolling();
-            // Optionally clear the plot or reset axes here
+            clearPlot();
             startPlotPolling();
         }
 

@@ -14,7 +14,7 @@ from services.instrument import (
     disconnect_device,
     set_channel_settings
 )
-from services.instrument import instrument as inst_module
+from services import instrument as inst_module
 from services import monitor
 from api import routes
 

@@ -7,7 +7,7 @@ from pyvisa import VisaIOError
 rm = None
 instrument = None
 
-def initialize_visa(backend: str = '') -> bool:
+def initialize_visa() -> bool:
     """
     Initialize the PyVISA ResourceManager.
     Pass backend='@py' to use pyvisa‑py instead of NI‑VISA.

@@ -103,44 +103,25 @@
             return result;
         }
 
-        async function selectChannel(channel) {
-            currentChannel = channel;
+        async function selectChannel(ch) {
+            currentChannel = ch;
+            // UI update…
+            if (!currentDevice) return;
 
-            // 1) Update UI immediately
-            document.querySelectorAll('.channel-btn')
-            .forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`ch${channel}-btn`)
-            .classList.add('active');
-            document.getElementById('currentChannelInfo')
-            .textContent = `Configuring Channel: ${channel}`;
+            // 1) tell backend to switch (and acquire the lock there)
+            await apiCall('/api/set-channel','POST',{channel:ch});
 
-            if (!currentDevice) return;  // nothing to do if not connected
-
-            try {
-            // 2) Tell the server (and gRPC) to switch channels
-            await apiCall('/api/set-channel', 'POST', { channel });
-
-            // 3) Tear down the old stream and chart
+            // 2) tear down old stream & chart
             stopVoltageStream();
             Plotly.purge('plotDiv');
 
-            // 4) Re‑init an empty Plotly chart for the new channel
-            Plotly.newPlot('plotDiv', [{
-                x: [], y: [], mode: 'lines+markers',
-                name: `Channel ${channel} Voltage`
-            }], {
-                title: `Real‑time Voltage – Channel ${channel}`,
-                xaxis: { title: 'Time', type: 'date' },
-                yaxis: { title: 'Voltage (V)' , range: [0,30] }
-            }, { responsive: true });
+            // 3) re-init empty chart
+            Plotly.newPlot('plotDiv',[{
+                x:[], y:[], mode:'lines+markers', name:`Ch ${ch}`
+            }],{/*layout*/},{responsive:true});
 
-            // 5) Restart the SSE stream for the new channel
+            // 4) restart SSE
             startVoltageStream();
-
-            } catch (err) {
-            console.error('Failed to switch channel:', err);
-            alert('Could not switch channel. See console for details.');
-            }
         }
 
         async function scanDevices() {

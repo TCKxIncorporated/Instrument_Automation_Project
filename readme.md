@@ -45,7 +45,7 @@ utils/
 Install dependencies:
 
 ```sh
-git clone <repo>
+git clone [repo](https://github.com/TCKxIncorporated/Instrument_Automation_Project.git)
 cd Instrument_Automation_Project
 python -m venv venv
 source venv/bin/activate          # or Windows equivalent

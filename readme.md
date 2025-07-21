@@ -45,15 +45,25 @@ utils/
 Install dependencies:
 
 ```sh
-pip install fastapi uvicorn pyvisa pydantic
+git clone <repo>
+cd Instrument_Automation_Project
+python -m venv venv
+source venv/bin/activate          # or Windows equivalent
+pip install -r requirements.txt
 ```
 
 ### Running the Application
 
-Start the development server:
+To start the gRPC server:
 
 ```sh
-uvicorn main:app --reload
+python grpc_server.py 
+```
+
+To start the gRPC client and the FastAPI web interface:
+
+```sh
+python -m main
 ```
 
 Open your browser and navigate to [http://localhost:8000](http://localhost:8000) to access the web interface.

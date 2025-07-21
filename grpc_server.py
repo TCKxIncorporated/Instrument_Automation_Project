@@ -14,6 +14,7 @@ from services.instrument import (
     disconnect_device,
     set_channel_settings
 )
+from services.instrument import instrument as inst_module
 from services import monitor
 from api import routes
 
@@ -79,7 +80,7 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
             with environment_lock:
                 # select channel and set output
                 monitor.current_channel = request.channel
-                instr = monitor.instrument  # alias to connected pyvisa instrument
+                instr = inst_module.instrument  # alias to connected pyvisa instrument
                 instr.write(f"INST:NSEL {request.channel}")
                 instr.write(f"OUTP {'ON' if request.state else 'OFF'}")
                 # start or stop monitoring thread as needed
@@ -94,7 +95,7 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
     def StartMonitoring(self, request, context):
         try:
             with environment_lock:
-                monitor.start_monitoring(monitor.instrument, request.channel, True)
+                monitor.start_monitoring(inst_module.instrument, request.channel, True)
             return Empty()
         except Exception as e:
             context.set_details(str(e))

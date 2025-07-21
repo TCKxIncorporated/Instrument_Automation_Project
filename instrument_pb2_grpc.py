@@ -74,7 +74,7 @@ class InstrumentServiceStub(object):
                 request_serializer=instrument__pb2.ReadChannel.SerializeToString,
                 response_deserializer=instrument__pb2.Empty.FromString,
                 _registered_method=True)
-        self.MonitorVoltage = channel.unary_stream(
+        self.MonitorVoltage = channel.unary_unary(
                 '/InstrumentService/MonitorVoltage',
                 request_serializer=instrument__pb2.ReadChannel.SerializeToString,
                 response_deserializer=instrument__pb2.VoltageReading.FromString,
@@ -192,7 +192,7 @@ def add_InstrumentServiceServicer_to_server(servicer, server):
                     request_deserializer=instrument__pb2.ReadChannel.FromString,
                     response_serializer=instrument__pb2.Empty.SerializeToString,
             ),
-            'MonitorVoltage': grpc.unary_stream_rpc_method_handler(
+            'MonitorVoltage': grpc.unary_unary_rpc_method_handler(
                     servicer.MonitorVoltage,
                     request_deserializer=instrument__pb2.ReadChannel.FromString,
                     response_serializer=instrument__pb2.VoltageReading.SerializeToString,
@@ -440,7 +440,7 @@ class InstrumentService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(
+        return grpc.experimental.unary_unary(
             request,
             target,
             '/InstrumentService/MonitorVoltage',

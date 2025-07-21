@@ -19,8 +19,6 @@
         .status { padding: 10px; border-radius: 5px; margin: 10px 0; }
         .status.connected { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .status.disconnected { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .output-on { background: #28a745 !important; }
-        .output-off { background: #dc3545 !important; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .control-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; align-items: center; }
         .channel-selector { display: flex; gap: 10px; margin: 10px 0; }
@@ -92,7 +90,7 @@
     <script>
         let currentDevice = null;
         let currentChannel = 1;
-        let evtSource = null;
+        let plotInterval = null;
 
         async function apiCall(endpoint, method = 'GET', data = null) {
             const options = { method, headers: { 'Content-Type': 'application/json' } };
@@ -105,23 +103,12 @@
 
         async function selectChannel(ch) {
             currentChannel = ch;
-            // UI update…
+            document.querySelectorAll('.channel-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`ch${ch}-btn`).classList.add('active');
+            document.getElementById('currentChannelInfo').textContent = `Configuring Channel: ${ch}`;
             if (!currentDevice) return;
-
-            // 1) tell backend to switch (and acquire the lock there)
-            await apiCall('/api/set-channel','POST',{channel:ch});
-
-            // 2) tear down old stream & chart
-            stopVoltageStream();
-            Plotly.purge('plotDiv');
-
-            // 3) re-init empty chart
-            Plotly.newPlot('plotDiv',[{
-                x:[], y:[], mode:'lines+markers', name:`Ch ${ch}`
-            }],{/*layout*/},{responsive:true});
-
-            // 4) restart SSE
-            startVoltageStream();
+            await apiCall('/api/set-channel', 'POST', { channel: ch });
+            restartPlotPolling();
         }
 
         async function scanDevices() {
@@ -146,7 +133,6 @@
                 document.getElementById('connectionStatus').className = 'status connected';
                 currentDevice = device;
                 await updatePowerButton();
-
             } catch (e) {
                 document.getElementById('connectionStatus').textContent = 'Connection Failed';
                 document.getElementById('connectionStatus').className = 'status disconnected';
@@ -173,27 +159,26 @@
             await updatePowerButton();
         }
 
-        // Initialize empty Plotly chart
-        Plotly.newPlot('plotDiv', [{ x: [], y: [], mode: 'lines+markers', name: 'Voltage' }], {
-            title: 'Real‑time Voltage',
-            xaxis: { title: 'Time', type: 'date' },
-            yaxis: { title: 'Voltage (V)', range: [0, 30] }
-        }, { responsive: true });
-
-        function startVoltageStream() {
-            if (evtSource) return;
-            evtSource = new EventSource('/api/plot-data/stream');
-            evtSource.onmessage = e => {
-                const { time, voltage } = JSON.parse(e.data);
-                Plotly.extendTraces('plotDiv', { x: [[time]], y: [[voltage]] }, [0]);
-            };
-            evtSource.onerror = err => { console.error('SSE error', err); };
+        function startPlotPolling() {
+            if (plotInterval) return;
+            plotInterval = setInterval(updatePlot, 500);
+            updatePlot();
         }
 
-        function stopVoltageStream() {
-            if (!evtSource) return;
-            evtSource.close();
-            evtSource = null;
+        function stopPlotPolling() {
+            if (!plotInterval) return;
+            clearInterval(plotInterval);
+            plotInterval = null;
+        }
+
+        async function updatePlot() {
+            if (!currentDevice) return;
+            try {
+                const data = await apiCall('/api/plot-data');
+                Plotly.extendTraces('plotDiv', { x: [[data.time]], y: [[data.voltage]] }, [0]);
+            } catch (e) {
+                console.error('Plot update failed', e);
+            }
         }
 
         async function updatePowerButton() {
@@ -204,17 +189,17 @@
             if (isOn) {
                 btn.className = 'power-btn power-on';
                 txt.textContent = 'Turn OFF';
-                startVoltageStream();
+                startPlotPolling();
             } else {
                 btn.className = 'power-btn power-off';
                 txt.textContent = 'Turn ON';
-                stopVoltageStream();
+                stopPlotPolling();
             }
         }
 
         function clearPlot() {
             if (currentDevice) apiCall('/api/clear-data', 'POST');
-            stopVoltageStream();
+            stopPlotPolling();
             Plotly.purge('plotDiv');
             Plotly.newPlot('plotDiv', [{ x: [], y: [], mode: 'lines+markers', name: 'Voltage' }], {
                 title: 'Real‑time Voltage',
@@ -223,8 +208,12 @@
             }, { responsive: true });
         }
 
-        // Periodically refresh power button state
-        //setInterval(() => { if (currentDevice) updatePowerButton(); }, 3000);
+        // Initialize empty Plotly chart
+        Plotly.newPlot('plotDiv', [{ x: [], y: [], mode: 'lines+markers', name: 'Voltage' }], {
+            title: 'Real‑time Voltage',
+            xaxis: { title: 'Time', type: 'date' },
+            yaxis: { title: 'Voltage (V)', range: [0, 30] }
+        }, { responsive: true });
 
         // Initial scan
         scanDevices();

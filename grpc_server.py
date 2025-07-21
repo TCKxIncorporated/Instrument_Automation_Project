@@ -102,19 +102,15 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
             return Empty()
 
     def MonitorVoltage(self, request, context):
-        while True:
-            try:
-                with environment_lock:
-                    reading = monitor.get_plot_data(request.channel)
-                yield instrument_pb2.VoltageReading(
-                    timestamp=reading["time"],
-                    voltage=reading["voltage"],
-                    channel=reading["channel"],
-                )
-            except Exception:
-                # if instrument is busy or error, skip until next interval
-                pass
-            time.sleep(0.5)
+        # Grab one reading and send it back
+        with environment_lock:
+            reading = monitor.get_plot_data(request.channel)
+        return instrument_pb2.VoltageReading(
+            timestamp=reading["time"],
+            voltage=reading["voltage"],
+            channel=reading["channel"],
+        )
+
 
     def ClearData(self, request, context):
         try:

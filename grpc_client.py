@@ -97,9 +97,6 @@ async def main():
     ok = initialize_visa()
     if not ok:
         return
-    # now call ListDevices
-    devices = list_devices()
-    print("Found:", devices)
 
 if __name__ == "__main__":
     asyncio.run(main())   # correct way

@@ -98,7 +98,7 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
                 voltage= reading["voltage"],
                 channel= reading["channel"],
             )
-            time.sleep(1)
+            time.sleep(0.5)
 
 
     def ClearData(self, request, context):

@@ -103,13 +103,43 @@
             return result;
         }
 
-        function selectChannel(channel) {
+        async function selectChannel(channel) {
             currentChannel = channel;
-            document.querySelectorAll('.channel-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`ch${channel}-btn`).classList.add('active');
-            document.getElementById('currentChannelInfo').textContent = `Configuring Channel: ${channel}`;
-            if (currentDevice) {
-                apiCall('/api/set-channel', 'POST', { channel: parseInt(channel) });
+
+            // 1) Update UI immediately
+            document.querySelectorAll('.channel-btn')
+            .forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`ch${channel}-btn`)
+            .classList.add('active');
+            document.getElementById('currentChannelInfo')
+            .textContent = `Configuring Channel: ${channel}`;
+
+            if (!currentDevice) return;  // nothing to do if not connected
+
+            try {
+            // 2) Tell the server (and gRPC) to switch channels
+            await apiCall('/api/set-channel', 'POST', { channel });
+
+            // 3) Tear down the old stream and chart
+            stopVoltageStream();
+            Plotly.purge('plotDiv');
+
+            // 4) Re‑init an empty Plotly chart for the new channel
+            Plotly.newPlot('plotDiv', [{
+                x: [], y: [], mode: 'lines+markers',
+                name: `Channel ${channel} Voltage`
+            }], {
+                title: `Real‑time Voltage – Channel ${channel}`,
+                xaxis: { title: 'Time', type: 'date' },
+                yaxis: { title: 'Voltage (V)' , range: [0,30] }
+            }, { responsive: true });
+
+            // 5) Restart the SSE stream for the new channel
+            startVoltageStream();
+
+            } catch (err) {
+            console.error('Failed to switch channel:', err);
+            alert('Could not switch channel. See console for details.');
             }
         }
 
@@ -135,6 +165,7 @@
                 document.getElementById('connectionStatus').className = 'status connected';
                 currentDevice = device;
                 await updatePowerButton();
+
             } catch (e) {
                 document.getElementById('connectionStatus').textContent = 'Connection Failed';
                 document.getElementById('connectionStatus').className = 'status disconnected';
@@ -190,13 +221,13 @@
             const btn = document.getElementById('powerBtn');
             const txt = document.getElementById('powerBtnText');
             if (isOn) {
-                startVoltageStream();
                 btn.className = 'power-btn power-on';
                 txt.textContent = 'Turn OFF';
+                startVoltageStream();
             } else {
-                stopVoltageStream();
                 btn.className = 'power-btn power-off';
                 txt.textContent = 'Turn ON';
+                stopVoltageStream();
             }
         }
 
@@ -212,7 +243,7 @@
         }
 
         // Periodically refresh power button state
-        setInterval(() => { if (currentDevice) updatePowerButton(); }, 3000);
+        //setInterval(() => { if (currentDevice) updatePowerButton(); }, 3000);
 
         // Initial scan
         scanDevices();

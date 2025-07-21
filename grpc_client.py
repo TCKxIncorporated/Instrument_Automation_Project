@@ -81,13 +81,13 @@ def start_monitoring(channel):
 def get_plot_data(channel: int):
     chan = grpc.insecure_channel(GRPC_ADDRESS)
     stub = instrument_pb2_grpc.InstrumentServiceStub(chan)
-    req  = instrument_pb2.ReadChannel(channel=channel)
-    reading = stub.MonitorVoltage(req)   # single VoltageReading
+    reading = stub.MonitorVoltage(instrument_pb2.ReadChannel(channel=channel))
     return {
         "time":    reading.timestamp,
         "voltage": reading.voltage,
         "channel": reading.channel,
     }
+
 
 
 def clear_data():

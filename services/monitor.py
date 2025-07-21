@@ -50,3 +50,17 @@ def get_plot_data(channel):
         "voltage": list(voltage_data[channel]),
         "channel": channel
     }
+
+def get_latest_reading(channel):
+    """Return the most‐recent sample as primitives ready for protobuf."""
+    if not time_data[channel] or not voltage_data[channel]:
+        raise ValueError("no data for channel %s" % channel)
+
+    # take the last sample
+    t = time_data[channel][-1]
+    v = voltage_data[channel][-1]
+
+    # UNIX‐epoch seconds or milliseconds (match your .proto int64)
+    ts = int(t.timestamp())  
+
+    return {"time": ts, "voltage": v, "channel": channel}

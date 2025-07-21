@@ -58,7 +58,6 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
 
     def ConnectDevice(self, request, context):
         try:
-            # use lock to ensure exclusive access during connection
             with environment_lock:
                 idn = connect_device(request.address)
             success = bool(idn)
@@ -76,14 +75,11 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
 
     def SetOutput(self, request, context):
         try:
-            # guard instrument writes
             with environment_lock:
-                # select channel and set output
                 monitor.current_channel = request.channel
-                instr = inst_module.instrument  # alias to connected pyvisa instrument
+                instr = inst_module.instrument
                 instr.write(f"INST:NSEL {request.channel}")
                 instr.write(f"OUTP {'ON' if request.state else 'OFF'}")
-                # start or stop monitoring thread as needed
                 if not request.state:
                     monitor.stop_monitoring()
                 else:
@@ -96,6 +92,8 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
         try:
             with environment_lock:
                 monitor.start_monitoring(inst_module.instrument, request.channel, True)
+            # let the background thread spin up
+            time.sleep(0.05)
             return Empty()
         except Exception as e:
             context.set_details(str(e))
@@ -104,23 +102,17 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
         
     def MonitorVoltage(self, request, context):
         try:
-            rd = monitor.get_plot_data(request.channel)
-
-            ts      = int(rd["time"])
-            voltage = float(rd["voltage"])
-            channel = int(rd["channel"])
-
+            rd = monitor.get_latest_reading(request.channel)
             return instrument_pb2.VoltageReading(
-                timestamp=ts,
-                voltage=voltage,
-                channel=channel,
+                timestamp=rd["time"],
+                voltage=rd["voltage"],
+                channel=rd["channel"],
             )
         except Exception as e:
             context.set_details(f"MonitorVoltage error: {e}")
             context.set_code(grpc.StatusCode.INTERNAL)
             return instrument_pb2.VoltageReading()
-
-
+    
     def ClearData(self, request, context):
         try:
             with environment_lock:

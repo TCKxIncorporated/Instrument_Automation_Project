@@ -16,7 +16,6 @@ def initialize_visa(backend: str = '') -> bool:
     try:
         # Pick your backend here:
         rm = pyvisa.ResourceManager()
-    
         return True
     except Exception as e:
         print(f"[VISA ERROR] Failed to initialize VISA: {e}")

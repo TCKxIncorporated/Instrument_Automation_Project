@@ -62,7 +62,7 @@ message ReadChannel {
 }
 
 message VoltageReading {
-  string timestamp = 1;
+  int64 timestamp = 1;
   float voltage = 2;
   int32 channel = 3;
 }

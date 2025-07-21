@@ -101,16 +101,24 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
             context.set_details(str(e))
             context.set_code(grpc.StatusCode.INTERNAL)
             return Empty()
-
+        
     def MonitorVoltage(self, request, context):
-        # Grab one reading and send it back
-        with environment_lock:
-            reading = monitor.get_plot_data(request.channel)
-        return instrument_pb2.VoltageReading(
-            timestamp=reading["time"],
-            voltage=reading["voltage"],
-            channel=reading["channel"],
-        )
+        try:
+            rd = monitor.get_plot_data(request.channel)
+
+            ts      = int(rd["time"])
+            voltage = float(rd["voltage"])
+            channel = int(rd["channel"])
+
+            return instrument_pb2.VoltageReading(
+                timestamp=ts,
+                voltage=voltage,
+                channel=channel,
+            )
+        except Exception as e:
+            context.set_details(f"MonitorVoltage error: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            return instrument_pb2.VoltageReading()
 
 
     def ClearData(self, request, context):

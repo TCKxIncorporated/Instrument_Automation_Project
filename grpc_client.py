@@ -5,7 +5,7 @@ from instrument_pb2 import DeviceRequest, Empty
 from instrument_pb2_grpc import InstrumentServiceStub
 import asyncio
 
-GRPC_ADDRESS = '172.20.10.3:50051'
+GRPC_ADDRESS = '192.168.216.103:50051'
 
 def initialize_visa():
     with grpc.insecure_channel(GRPC_ADDRESS) as channel:

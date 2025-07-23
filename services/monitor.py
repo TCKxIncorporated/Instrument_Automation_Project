@@ -7,9 +7,10 @@ monitoring_active = False
 monitoring_thread = None
 
 voltage_data = {1: deque(maxlen=100), 2: deque(maxlen=100), 3: deque(maxlen=100)}
-time_data = {1: deque(maxlen=100), 2: deque(maxlen=100), 3: deque(maxlen=100)}
+time_data    = {1: deque(maxlen=100), 2: deque(maxlen=100), 3: deque(maxlen=100)}
 
 def monitor_voltage(instrument, current_channel, connected):
+    global monitoring_active
     while monitoring_active:
         try:
             if instrument and connected:
@@ -20,6 +21,7 @@ def monitor_voltage(instrument, current_channel, connected):
                 voltage_data[current_channel].append(voltage)
                 time_data[current_channel].append(now)
 
+                # expire old points
                 cutoff = now - timedelta(minutes=5)
                 while time_data[current_channel] and time_data[current_channel][0] < cutoff:
                     time_data[current_channel].popleft()
@@ -32,7 +34,11 @@ def monitor_voltage(instrument, current_channel, connected):
 def start_monitoring(instrument, channel, connected):
     global monitoring_active, monitoring_thread
     monitoring_active = True
-    monitoring_thread = threading.Thread(target=monitor_voltage, args=(instrument, channel, connected), daemon=True)
+    monitoring_thread = threading.Thread(
+        target=monitor_voltage,
+        args=(instrument, channel, connected),
+        daemon=True,
+    )
     monitoring_thread.start()
 
 def stop_monitoring():
@@ -45,22 +51,20 @@ def clear_data():
         time_data[ch].clear()
 
 def get_plot_data(channel):
+    # return numeric timestamps instead of strings
     return {
-        "time": [t.isoformat() for t in time_data[channel]],
+        "time": [t.timestamp() for t in time_data[channel]],
         "voltage": list(voltage_data[channel]),
         "channel": channel
     }
 
 def get_latest_reading(channel):
-    """Return the most‐recent sample as primitives ready for protobuf."""
     if not time_data[channel] or not voltage_data[channel]:
-        raise ValueError("no data for channel %s" % channel)
-
-    # take the last sample
+        raise ValueError(f"no data for channel {channel}")
     t = time_data[channel][-1]
     v = voltage_data[channel][-1]
-
-    # UNIX‐epoch seconds or milliseconds (match your .proto int64)
-    ts = int(t.timestamp())  
-
-    return {"time": ts, "voltage": v, "channel": channel}
+    return {
+        "time": int(t.timestamp()),
+        "voltage": v,
+        "channel": channel
+    }

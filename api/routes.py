@@ -1,16 +1,15 @@
 from fastapi import APIRouter, HTTPException
 from models.schema import PowerSupplySettings, OutputControl
-#from services import instrument, monitor
 from utils.helpers import current_timestamp
 import grpc_client as instrument
 from services.instrument import instrument  as inst
 from services import monitor
 from pydantic import BaseModel
 from typing import List
-
+import grpc_client as grpcc
 from fastapi.responses import StreamingResponse
 import json
-import grpc_client as instrument
+
 
 
 class ChannelInput(BaseModel):
@@ -32,9 +31,21 @@ class DeviceListResponse(BaseModel):
 
 @router.post("/set-channel")
 def set_channel(payload: ChannelInput):
-    device_status["current_channel"] = payload.channel
-    return {"message": f"Channel set to {payload.channel}"}
+    ch = payload.channel
 
+    # 1) update our REST state
+    device_status["current_channel"] = ch
+
+    # 2) tell the server to purge its old buffers
+    grpcc.clear_data()
+
+    # 3) re‑start the server’s monitor thread on the new channel
+    #    (this invokes your InstrumentService.StartMonitoring RPC)
+    grpcc.start_monitoring(ch)
+
+    return {
+        "message": f"Channel switched to {ch}, data cleared, monitoring restarted."
+    }
 
 @router.get("/devices", response_model=DeviceListResponse)
 def get_devices():

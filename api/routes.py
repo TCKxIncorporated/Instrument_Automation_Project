@@ -75,6 +75,11 @@ def set_settings(settings: PowerSupplySettings):
 
     return {"success": True, "message": message}
 
+@router.get("/start_ploting")
+def start_ploting():
+    grpcc.start_monitoring(device_status["current_channel"])
+    return {"message": "Plotting started"}
+
 @router.get("/plot-data")
 def plot_data():
     ch = device_status["current_channel"]

@@ -159,8 +159,9 @@
             await updatePowerButton();
         }
 
-        function startPlotPolling() {
+        async function startPlotPolling() {
             if (plotInterval) return;
+            await apiCall('/api/start_ploting');
             plotInterval = setInterval(updatePlot, 1000);
             updatePlot();
         }

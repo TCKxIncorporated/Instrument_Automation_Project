@@ -107,9 +107,9 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
         try:
             rd = monitor.get_latest_reading(request.channel)
         except ValueError:
-            # no samples yet: return a default "zero" reading
+            now_ts = int(datetime.utcnow().timestamp())
             return instrument_pb2.VoltageReading(
-                timestamp=datetime.now(),
+                timestamp=now_ts,
                 voltage=0.0,
                 channel=request.channel,
             )

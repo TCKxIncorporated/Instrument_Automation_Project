@@ -91,9 +91,9 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
     def StartMonitoring(self, request, context):
         try:
             with environment_lock:
-                monitor.start_monitoring(inst_module.instrument, request.channel, True)
+                monitor.start_monitoring(inst_module.instrument, True)
             # let the background thread spin up
-            time.sleep(0.05)
+            time.sleep(1)
             return Empty()
         except Exception as e:
             context.set_details(str(e))

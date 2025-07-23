@@ -100,18 +100,25 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             return Empty()
         
+    # in your InstrumentServiceServicer
+
     def MonitorVoltage(self, request, context):
         try:
             rd = monitor.get_latest_reading(request.channel)
+        except ValueError:
+            # no samples yet: return a default "zero" reading
             return instrument_pb2.VoltageReading(
-                timestamp=rd["time"],
-                voltage=rd["voltage"],
-                channel=rd["channel"],
+                timestamp=0,
+                voltage=0.0,
+                channel=request.channel,
             )
-        except Exception as e:
-            context.set_details(f"MonitorVoltage error: {e}")
-            context.set_code(grpc.StatusCode.INTERNAL)
-            return instrument_pb2.VoltageReading()
+
+        return instrument_pb2.VoltageReading(
+            timestamp=rd["time"],
+            voltage=rd["voltage"],
+            channel=rd["channel"],
+        )
+
     
     def ClearData(self, request, context):
         try:

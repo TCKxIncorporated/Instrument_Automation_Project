@@ -31,15 +31,17 @@ def monitor_voltage(instrument, current_channel, connected):
             print(f"[MONITOR ERROR] {e}")
         time.sleep(1)
 
-def start_monitoring(instrument, channel, connected):
-    global monitoring_active, monitoring_thread
+def start_monitoring(instr, channel, connected):
+    global monitoring_active,_monitor_thread
+    # kill any existing loop first
+    if monitoring_active:
+      monitoring_active = False
+      _monitor_thread.join()
+    # now start fresh
     monitoring_active = True
-    monitoring_thread = threading.Thread(
-        target=monitor_voltage,
-        args=(instrument, channel, connected),
-        daemon=True,
-    )
-    monitoring_thread.start()
+    _monitor_thread = Thread(target=monitor_voltage, args=(instr,channel,connected), daemon=True)
+    _monitor_thread.start()
+
 
 def stop_monitoring():
     global monitoring_active

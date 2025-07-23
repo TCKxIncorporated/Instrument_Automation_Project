@@ -33,14 +33,9 @@ class DeviceListResponse(BaseModel):
 def set_channel(payload: ChannelInput):
     ch = payload.channel
 
-    # 1) update our REST state
     device_status["current_channel"] = ch
-
-    # 2) tell the server to purge its old buffers
+    grpcc.stop_monitoring()
     grpcc.clear_data()
-
-    # 3) re‑start the server’s monitor thread on the new channel
-    #    (this invokes your InstrumentService.StartMonitoring RPC)
     grpcc.start_monitoring(ch)
 
     return {

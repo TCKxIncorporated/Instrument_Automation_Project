@@ -39,7 +39,7 @@ def start_monitoring(instr, channel, connected):
       _monitor_thread.join()
     # now start fresh
     monitoring_active = True
-    _monitor_thread = Thread(target=monitor_voltage, args=(instr,channel,connected), daemon=True)
+    _monitor_thread = threading.Thread(target=monitor_voltage, args=(instr,channel,connected), daemon=True)
     _monitor_thread.start()
 
 

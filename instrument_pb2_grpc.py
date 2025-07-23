@@ -74,6 +74,11 @@ class InstrumentServiceStub(object):
                 request_serializer=instrument__pb2.ReadChannel.SerializeToString,
                 response_deserializer=instrument__pb2.Empty.FromString,
                 _registered_method=True)
+        self.StopMonitoring = channel.unary_unary(
+                '/InstrumentService/StopMonitoring',
+                request_serializer=instrument__pb2.Empty.SerializeToString,
+                response_deserializer=instrument__pb2.Empty.FromString,
+                _registered_method=True)
         self.MonitorVoltage = channel.unary_unary(
                 '/InstrumentService/MonitorVoltage',
                 request_serializer=instrument__pb2.ReadChannel.SerializeToString,
@@ -137,6 +142,12 @@ class InstrumentServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def StopMonitoring(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def MonitorVoltage(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -190,6 +201,11 @@ def add_InstrumentServiceServicer_to_server(servicer, server):
             'StartMonitoring': grpc.unary_unary_rpc_method_handler(
                     servicer.StartMonitoring,
                     request_deserializer=instrument__pb2.ReadChannel.FromString,
+                    response_serializer=instrument__pb2.Empty.SerializeToString,
+            ),
+            'StopMonitoring': grpc.unary_unary_rpc_method_handler(
+                    servicer.StopMonitoring,
+                    request_deserializer=instrument__pb2.Empty.FromString,
                     response_serializer=instrument__pb2.Empty.SerializeToString,
             ),
             'MonitorVoltage': grpc.unary_unary_rpc_method_handler(
@@ -418,6 +434,33 @@ class InstrumentService(object):
             target,
             '/InstrumentService/StartMonitoring',
             instrument__pb2.ReadChannel.SerializeToString,
+            instrument__pb2.Empty.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def StopMonitoring(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/InstrumentService/StopMonitoring',
+            instrument__pb2.Empty.SerializeToString,
             instrument__pb2.Empty.FromString,
             options,
             channel_credentials,

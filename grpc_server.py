@@ -123,6 +123,15 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             return Empty()
 
+    def StopMonitoring(self, request, context):
+        try:
+            with environment_lock:
+                monitor.stop_monitoring()
+            return Empty()
+        except Exception as e:
+            context.set_details(str(e))
+            context.set_code(grpc.StatusCode.INTERNAL)
+            return Empty()
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

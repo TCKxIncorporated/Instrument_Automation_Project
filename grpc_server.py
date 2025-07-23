@@ -91,7 +91,7 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
     def StartMonitoring(self, request, context):
         try:
             with environment_lock:
-                monitor.start_monitoring(inst_module.instrument, True)
+                monitor.start_monitoring(inst_module.instrument, request.channel, True)
             # let the background thread spin up
             time.sleep(1)
             return Empty()
@@ -102,7 +102,7 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
         
     def MonitorVoltage(self, request, context):
         try:
-            rd = monitor.get_latest_reading()
+            rd = monitor.get_latest_reading(request.channel)
             return instrument_pb2.VoltageReading(
                 timestamp=rd["time"],
                 voltage=rd["voltage"],

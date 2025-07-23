@@ -102,7 +102,7 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
         
     def MonitorVoltage(self, request, context):
         try:
-            rd = monitor.get_latest_reading(request.channel)
+            rd = monitor.get_latest_reading()
             return instrument_pb2.VoltageReading(
                 timestamp=rd["time"],
                 voltage=rd["voltage"],

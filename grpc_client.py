@@ -77,7 +77,7 @@ def start_monitoring(channel):
         response = stub.StartMonitoring(request)
         return instrument_pb2.Empty()
     
-# grpc_client.py
+    
 def get_plot_data(channel: int):
     chan = grpc.insecure_channel(GRPC_ADDRESS)
     stub = instrument_pb2_grpc.InstrumentServiceStub(chan)

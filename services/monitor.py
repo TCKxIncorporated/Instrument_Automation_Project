@@ -3,68 +3,101 @@ import time
 from collections import deque
 import threading
 
+# Single monitor thread, dynamic channel selection
 monitoring_active = False
-monitoring_thread = None
+_monitor_thread = None
+current_channel = 1  # defaults to channel 1
 
-voltage_data = {1: deque(maxlen=100), 2: deque(maxlen=100), 3: deque(maxlen=100)}
-time_data    = {1: deque(maxlen=100), 2: deque(maxlen=100), 3: deque(maxlen=100)}
+# per-channel historical buffers (last 5 minutes)
+voltage_data = {1: deque(maxlen=300), 2: deque(maxlen=300), 3: deque(maxlen=300)}
+time_data    = {1: deque(maxlen=300), 2: deque(maxlen=300), 3: deque(maxlen=300)}
 
-def monitor_voltage(instrument, current_channel, connected):
+
+def _monitor_loop(instrument, connected):
+    """
+    Internal loop: polls the currently selected channel once per second,
+    storing up to the last 5 minutes of data.
+    """
     global monitoring_active
     while monitoring_active:
         try:
             if instrument and connected:
-                instrument.write(f"INST:NSEL {current_channel}")
-                voltage = float(instrument.query("MEAS:VOLT?").strip())
-
+                # read the dynamic channel
+                ch = current_channel
+                instrument.write(f"INST:NSEL {ch}")
+                raw = instrument.query("MEAS:VOLT?").strip()
+                v = float(raw)
                 now = datetime.now()
-                voltage_data[current_channel].append(voltage)
-                time_data[current_channel].append(now)
 
-                # expire old points
+                voltage_data[ch].append(v)
+                time_data[ch].append(now)
+
+                # expire older than 5 minutes
                 cutoff = now - timedelta(minutes=5)
-                while time_data[current_channel] and time_data[current_channel][0] < cutoff:
-                    time_data[current_channel].popleft()
-                    voltage_data[current_channel].popleft()
-
+                buf_time = time_data[ch]
+                buf_volt = voltage_data[ch]
+                while buf_time and buf_time[0] < cutoff:
+                    buf_time.popleft()
+                    buf_volt.popleft()
         except Exception as e:
             print(f"[MONITOR ERROR] {e}")
         time.sleep(1)
 
-def start_monitoring(instrument, channel, connected):
-    global monitoring_active, monitoring_thread
+
+def start_monitoring(instrument, connected=True):
+    """
+    Start the single monitor thread. Subsequent calls are no-ops.
+    """
+    global monitoring_active, _monitor_thread
+    if monitoring_active:
+        return
     monitoring_active = True
-    monitoring_thread = threading.Thread(
-        target=monitor_voltage,
-        args=(instrument, channel, connected),
-        daemon=True,
+    _monitor_thread = threading.Thread(
+        target=_monitor_loop,
+        args=(instrument, connected),
+        daemon=True
     )
-    monitoring_thread.start()
+    _monitor_thread.start()
+
 
 def stop_monitoring():
+    """
+    Stop the monitor thread (graceful shutdown).
+    """
     global monitoring_active
     monitoring_active = False
 
+
+def set_channel(ch: int):
+    """
+    Change the channel being monitored. Clears historical data.
+    """
+    global current_channel
+    current_channel = ch
+    clear_data()
+
+
 def clear_data():
-    for ch in voltage_data:
-        voltage_data[ch].clear()
-        time_data[ch].clear()
+    """
+    Clear all stored samples for all channels.
+    """
+    for dq in voltage_data.values():
+        dq.clear()
+    for dq in time_data.values():
+        dq.clear()
 
-def get_plot_data(channel):
-    # return numeric timestamps instead of strings
-    return {
-        "time": [t.timestamp() for t in time_data[channel]],
-        "voltage": list(voltage_data[channel]),
-        "channel": channel
-    }
 
-def get_latest_reading(channel):
-    if not time_data[channel] or not voltage_data[channel]:
-        raise ValueError(f"no data for channel {channel}")
-    t = time_data[channel][-1]
-    v = voltage_data[channel][-1]
-    return {
-        "time": int(t.timestamp()),
-        "voltage": v,
-        "channel": channel
-    }
+def get_latest_reading():
+    """
+    Return the most recent sample for the current channel,
+    as primitives ready for protobuf or JSON.
+    """
+    ch = current_channel
+    buf_t = time_data[ch]
+    buf_v = voltage_data[ch]
+    if not buf_t or not buf_v:
+        raise ValueError(f"no data for channel {ch}")
+    t = buf_t[-1]
+    v = buf_v[-1]
+    # epoch seconds as int64
+    return {"time": int(t.timestamp()), "voltage": v, "channel": ch}

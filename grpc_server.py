@@ -17,6 +17,7 @@ from services.instrument import (
 from services import instrument as inst_module
 from services import monitor
 from api import routes
+from datetime import datetime
 
 # Global lock to serialize all VISA resource access
 environment_lock = threading.Lock()
@@ -108,7 +109,7 @@ class InstrumentServiceServicer(instrument_pb2_grpc.InstrumentServiceServicer):
         except ValueError:
             # no samples yet: return a default "zero" reading
             return instrument_pb2.VoltageReading(
-                timestamp=0,
+                timestamp=datetime.now(),
                 voltage=0.0,
                 channel=request.channel,
             )
